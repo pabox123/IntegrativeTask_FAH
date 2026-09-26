@@ -1,0 +1,36 @@
+Santiago Restrepo
+Email: santiago.restrepo@correo.com
+Phone: +57 315 478 2910
+Location: Medellin, Colombia
+LinkedIn: linkedin.com/in/santiagorestrepo
+GitHub: github.com/santiagorestrepo
+
+PROFILE SUMMARY
+Full stack developer with 3 years of experience developing web applications.
+Experienced in building scalable applications for fintech and e-commerce
+companies in Colombia. Passionate about clean code and modern JavaScript
+ecosystems.
+
+PROFESSIONAL EXPERIENCE
+Senior Web Developer
+Rappi Technologies · 2 years
+- Developed microservices using NodeJS and Express for payment processing.
+- Built responsive user interfaces with React.js and Redux.
+- Integrated REST APIs with PostgreSQL and MongoDB databases.
+- Managed code versioning with Git and deployed applications using Docker.
+
+Junior Full Stack Developer
+Globant · 1 year
+- Created frontend components using Javascript and Vue.
+- Developed backend services with Spring Boot and Java.
+- Maintained MySQL databases and wrote optimized SQL queries.
+
+EDUCATION
+Bachelor of Systems Engineering
+Universidad Nacional de Colombia · 2021
+
+TECHNICAL SKILLS
+Programming Languages: JS, TypeScript, Java, Python
+Frameworks: React.js, Vue, NodeJS, Spring Boot
+Databases: Postgres, MongoDB, MySQL
+Tools: Git, Docker, REST APIs, Linux

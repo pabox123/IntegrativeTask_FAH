@@ -1,0 +1,44 @@
+Andrés Felipe Castaño
+Email: andres.castano@correo.com
+Phone: +57 310 234 8899
+Location: Cali, Colombia
+LinkedIn: linkedin.com/in/andrescastano
+GitHub: github.com/acastano
+
+PROFILE SUMMARY
+DevOps engineer with 4 years of experience automating infrastructure and
+CI/CD pipelines for cloud-native applications. Expert in container
+orchestration and infrastructure as code for high-availability systems.
+
+PROFESSIONAL EXPERIENCE
+Senior DevOps Engineer
+MercadoLibre Colombia · 2 years
+- Orchestrated k8s clusters on AWS EKS for production workloads.
+- Automated deployments using Jenkins and GitHub Actions.
+- Managed infrastructure with Terraform and Ansible.
+- Monitored systems with Prometheus, Grafana, and CloudWatch.
+- Wrote Bash scripts for automation and Linux server administration.
+
+Cloud Engineer
+Sofka Technologies · 2 years
+- Migrated legacy applications to Docker containers.
+- Implemented CI/CD pipelines with GitLab CI and Azure DevOps.
+- Configured AWS services including EC2, S3, RDS, and Lambda.
+- Maintained Linux servers (Ubuntu, CentOS) and managed networking.
+
+EDUCATION
+Bachelor of Electronics Engineering
+Universidad del Valle · 2020
+
+CERTIFICATIONS
+AWS Certified Solutions Architect - Associate
+Certified Kubernetes Administrator (CKA)
+
+TECHNICAL SKILLS
+Cloud: AWS, Azure, GCP
+Containers: Docker, k8s, Helm
+CI/CD: Jenkins, GitLab CI, GitHub Actions
+IaC: Terraform, Ansible, CloudFormation
+OS: Linux (Ubuntu, CentOS), Bash, PowerShell
+Monitoring: Prometheus, Grafana, ELK Stack
+Tools: Git, Jira, Confluence
