@@ -1,0 +1,41 @@
+Laura Daniela Mejía
+Email: laura.mejia@correo.com
+Phone: +57 318 567 1234
+Location: Barranquilla, Colombia
+LinkedIn: linkedin.com/in/lauramejia
+GitHub: github.com/lauramejia
+
+PROFILE SUMMARY
+NLP engineer with 3 years of experience building language models and text
+processing systems. Specialized in transformer architectures and multilingual
+NLP for Spanish and English applications in the Latin American market.
+
+PROFESSIONAL EXPERIENCE
+NLP Engineer
+Globant NLP Lab · 2 years
+- Fine-tuned BERT and RoBERTa models using huggingface transformers.
+- Built text classification pipelines with spaCy and NLTK.
+- Implemented tokenization strategies for Spanish text using PyTorch.
+- Deployed NLP models as REST APIs with FastAPI and Docker.
+- Managed training datasets with SQL and pandas.
+
+Research Assistant
+Universidad del Norte · 1 year
+- Developed sentiment analysis models for Colombian Spanish tweets.
+- Used transformers library and Py Torch for sequence classification.
+- Performed data annotation and preprocessing with spacy and regex.
+- Published research on multilingual NLP at regional conferences.
+
+EDUCATION
+Master of Science in Computer Science
+Universidad del Norte · 2023
+Bachelor of Systems Engineering
+Universidad del Norte · 2021
+
+TECHNICAL SKILLS
+Programming Languages: Python, SQL, Bash
+NLP Libraries: transformers, spaCy, NLTK, huggingface, gensim
+Deep Learning: PyTorch, TensorFlow, BERT, RoBERTa
+Databases: PostgreSQL, MongoDB, Elasticsearch
+Tools: Git, Docker, Jupyter, Linux, FastAPI
+Languages: Spanish (native), English (C1)

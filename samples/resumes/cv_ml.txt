@@ -1,0 +1,38 @@
+Valentina Ospina
+Email: valentina.ospina@correo.com
+Phone: +57 320 891 4567
+Location: Bogota, Colombia
+LinkedIn: linkedin.com/in/valentinaospina
+GitHub: github.com/valospina
+
+PROFILE SUMMARY
+Machine learning engineer with 2 years of experience developing predictive
+models and data-processing pipelines. Specialized in computer vision and
+natural language processing applications for the Colombian agricultural
+sector.
+
+PROFESSIONAL EXPERIENCE
+ML Engineer
+Frubana · 1.5 years
+- Built demand forecasting models using scikit learn and Pandas.
+- Developed deep learning pipelines with Tensor Flow and Py Torch.
+- Processed large datasets using NumPy and SQL queries on PostgreSQL.
+- Deployed models using Git version control and Docker containers.
+
+Data Scientist Intern
+Bancolombia · 6 months
+- Created fraud detection algorithms with sklearn and XGBoost.
+- Analyzed transactional data using pandas and numpy.
+- Visualized results with Matplotlib and Seaborn.
+
+EDUCATION
+Master of Science in Data Science
+Universidad de los Andes · 2023
+Bachelor of Mathematics
+Universidad EAFIT · 2021
+
+TECHNICAL SKILLS
+Programming Languages: Python, R, SQL
+ML Libraries: Scikit-learn, Tensor Flow, Py Torch, Pandas, NumPy
+Databases: PostgreSQL, MySQL, BigQuery
+Tools: Git, Docker, Jupyter, Linux
