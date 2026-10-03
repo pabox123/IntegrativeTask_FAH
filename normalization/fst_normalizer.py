@@ -85,15 +85,7 @@ def build_frameworks_fst() -> FST:
 def build_databases_fst() -> FST:
     """
     Constructs an FST for normalizing database engine tokens.
-
     Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
-    - Q: {'q0', 'q1'}
-    - Σ: Raw input tokens ('Postgres', 'PostgreSQL', 'MySQL', 'MongoDB', 'SQL', etc.)
-    - Γ: Canonical output tokens ('POSTGRESQL', 'MYSQL', 'MONGODB', 'SQL', 'SQLITE', etc.)
-    - δ: Transition relation
-    - ω: Output mapping relation
-    - q0: Start state 'q0'
-    - F: Final accepting states {'q1'}
     """
     fst = FST()
     fst.add_start_state('q0')
@@ -104,25 +96,62 @@ def build_databases_fst() -> FST:
         ('q0', 'PostgreSQL', 'q1', ['POSTGRESQL']),
         ('q0', 'postgresql', 'q1', ['POSTGRESQL']),
         ('q0', 'POSTGRESQL', 'q1', ['POSTGRESQL']),
-
         ('q0', 'MySQL', 'q1', ['MYSQL']),
         ('q0', 'mysql', 'q1', ['MYSQL']),
-        ('q0', 'MYSQL', 'q1', ['MYSQL']),
-
         ('q0', 'MongoDB', 'q1', ['MONGODB']),
         ('q0', 'mongodb', 'q1', ['MONGODB']),
         ('q0', 'Mongo', 'q1', ['MONGODB']),
-        ('q0', 'mongo', 'q1', ['MONGODB']),
-
         ('q0', 'SQL', 'q1', ['SQL']),
-        ('q0', 'sql', 'q1', ['SQL']),
         ('q0', 'SQLite', 'q1', ['SQLITE']),
-        ('q0', 'sqlite', 'q1', ['SQLITE']),
+    ]
 
-        ('q0', 'Redis', 'q1', ['REDIS']),
-        ('q0', 'redis', 'q1', ['REDIS']),
-        ('q0', 'MariaDB', 'q1', ['MARIADB']),
-        ('q0', 'mariadb', 'q1', ['MARIADB']),
+    fst.add_transitions(transitions)
+    fst.add_final_state('q1')
+    return fst
+
+
+def build_aiml_fst() -> FST:
+    """
+    Constructs an FST for normalizing AI, Machine Learning, and Data Science tools.
+
+    Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
+    - Q: {'q0', 'q1'}
+    - Σ: Raw input tokens ('Pandas', 'NumPy', 'sklearn', 'Scikit-learn', 'PyTorch', 'TensorFlow', 'spaCy', etc.)
+    - Γ: Canonical output tokens ('PANDAS', 'NUMPY', 'SCIKIT_LEARN', 'PYTORCH', 'TENSORFLOW', 'SPACY', etc.)
+    - δ: Transition relation
+    - ω: Output mapping relation
+    - q0: Start state 'q0'
+    - F: Final accepting states {'q1'}
+    """
+    fst = FST()
+    fst.add_start_state('q0')
+
+    transitions = [
+        ('q0', 'Pandas', 'q1', ['PANDAS']),
+        ('q0', 'pandas', 'q1', ['PANDAS']),
+        ('q0', 'NumPy', 'q1', ['NUMPY']),
+        ('q0', 'numpy', 'q1', ['NUMPY']),
+
+        ('q0', 'sklearn', 'q1', ['SCIKIT_LEARN']),
+        ('q0', 'Scikit-learn', 'q1', ['SCIKIT_LEARN']),
+        ('q0', 'scikit learn', 'q1', ['SCIKIT_LEARN']),
+        ('q0', 'scikit-learn', 'q1', ['SCIKIT_LEARN']),
+
+        ('q0', 'TensorFlow', 'q1', ['TENSORFLOW']),
+        ('q0', 'tensorflow', 'q1', ['TENSORFLOW']),
+        ('q0', 'tf', 'q1', ['TENSORFLOW']),
+        ('q0', 'PyTorch', 'q1', ['PYTORCH']),
+        ('q0', 'pytorch', 'q1', ['PYTORCH']),
+
+        ('q0', 'spaCy', 'q1', ['SPACY']),
+        ('q0', 'spacy', 'q1', ['SPACY']),
+        ('q0', 'NLTK', 'q1', ['NLTK']),
+        ('q0', 'nltk', 'q1', ['NLTK']),
+        ('q0', 'BERT', 'q1', ['BERT']),
+        ('q0', 'bert', 'q1', ['BERT']),
+        ('q0', 'Transformers', 'q1', ['TRANSFORMERS']),
+        ('q0', 'transformers', 'q1', ['TRANSFORMERS']),
+        ('q0', 'HuggingFace', 'q1', ['TRANSFORMERS']),
     ]
 
     fst.add_transitions(transitions)
@@ -147,14 +176,20 @@ if __name__ == "__main__":
     fst_pl = build_programming_languages_fst()
     fst_fw = build_frameworks_fst()
     fst_db = build_databases_fst()
+    fst_ai = build_aiml_fst()
+
     print("\n--- Programming Languages ---")
-    for token in ["JS", "javascript", "py", "Python", "TS", "c++"]:
-        print(f"Input: '{token}' \t-> Canonical Output: '{normalize_token(token, fst_pl)}'")
+    for token in ["JS", "py", "TS"]:
+        print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_pl)}'")
 
     print("\n--- Frameworks / Libraries ---")
-    for token in ["React.js", "ReactJS", "NodeJS", "Node.js", "Django", "Spring Boot", "REST API"]:
-        print(f"Input: '{token}' \t-> Canonical Output: '{normalize_token(token, fst_fw)}'")
+    for token in ["React.js", "NodeJS", "Django"]:
+        print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_fw)}'")
 
     print("\n--- Databases ---")
-    for token in ["Postgres", "PostgreSQL", "mysql", "MongoDB", "mongo", "SQLite", "SQL"]:
-        print(f"Input: '{token}' \t-> Canonical Output: '{normalize_token(token, fst_db)}'")
+    for token in ["Postgres", "mysql", "MongoDB"]:
+        print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_db)}'")
+
+    print("\n--- AI / ML / Data Tools ---")
+    for token in ["Pandas", "sklearn", "Scikit-learn", "tf", "PyTorch", "spaCy", "HuggingFace"]:
+        print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_ai)}'")
