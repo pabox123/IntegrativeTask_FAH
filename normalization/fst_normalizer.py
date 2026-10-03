@@ -4,7 +4,6 @@ from pyformlang.fst import FST
 def build_programming_languages_fst() -> FST:
     """
     Constructs an FST for normalizing programming language tokens.
-    Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
     """
     fst = FST()
     fst.add_start_state('q0')
@@ -45,7 +44,6 @@ def build_programming_languages_fst() -> FST:
 def build_frameworks_fst() -> FST:
     """
     Constructs an FST for normalizing web/backend frameworks and libraries.
-    Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
     """
     fst = FST()
     fst.add_start_state('q0')
@@ -85,7 +83,6 @@ def build_frameworks_fst() -> FST:
 def build_databases_fst() -> FST:
     """
     Constructs an FST for normalizing database engine tokens.
-    Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
     """
     fst = FST()
     fst.add_start_state('q0')
@@ -113,15 +110,6 @@ def build_databases_fst() -> FST:
 def build_aiml_fst() -> FST:
     """
     Constructs an FST for normalizing AI, Machine Learning, and Data Science tools.
-
-    Formal Definition (7-tuple): M = (Q, Σ, Γ, δ, ω, q0, F)
-    - Q: {'q0', 'q1'}
-    - Σ: Raw input tokens ('Pandas', 'NumPy', 'sklearn', 'Scikit-learn', 'PyTorch', 'TensorFlow', 'spaCy', etc.)
-    - Γ: Canonical output tokens ('PANDAS', 'NUMPY', 'SCIKIT_LEARN', 'PYTORCH', 'TENSORFLOW', 'SPACY', etc.)
-    - δ: Transition relation
-    - ω: Output mapping relation
-    - q0: Start state 'q0'
-    - F: Final accepting states {'q1'}
     """
     fst = FST()
     fst.add_start_state('q0')
@@ -159,6 +147,46 @@ def build_aiml_fst() -> FST:
     return fst
 
 
+def build_devops_fst() -> FST:
+    """
+    Constructs an FST for normalizing DevOps, Cloud, and Version Control tools.
+    """
+    fst = FST()
+    fst.add_start_state('q0')
+
+    transitions = [
+        ('q0', 'Git', 'q1', ['GIT']),
+        ('q0', 'git', 'q1', ['GIT']),
+        ('q0', 'GIT', 'q1', ['GIT']),
+        ('q0', 'Linux', 'q1', ['LINUX']),
+        ('q0', 'linux', 'q1', ['LINUX']),
+        ('q0', 'Bash', 'q1', ['BASH']),
+        ('q0', 'bash', 'q1', ['BASH']),
+
+        ('q0', 'Docker', 'q1', ['DOCKER']),
+        ('q0', 'docker', 'q1', ['DOCKER']),
+        ('q0', 'k8s', 'q1', ['KUBERNETES']),
+        ('q0', 'Kubernetes', 'q1', ['KUBERNETES']),
+        ('q0', 'kubernetes', 'q1', ['KUBERNETES']),
+
+        ('q0', 'Jenkins', 'q1', ['JENKINS']),
+        ('q0', 'jenkins', 'q1', ['JENKINS']),
+        ('q0', 'Terraform', 'q1', ['TERRAFORM']),
+        ('q0', 'terraform', 'q1', ['TERRAFORM']),
+
+        ('q0', 'AWS', 'q1', ['AWS']),
+        ('q0', 'aws', 'q1', ['AWS']),
+        ('q0', 'GCP', 'q1', ['GCP']),
+        ('q0', 'gcp', 'q1', ['GCP']),
+        ('q0', 'Azure', 'q1', ['AZURE']),
+        ('q0', 'azure', 'q1', ['AZURE']),
+    ]
+
+    fst.add_transitions(transitions)
+    fst.add_final_state('q1')
+    return fst
+
+
 def normalize_token(token: str, fst: FST) -> str:
     """
     Translates a single raw token using the specified FST.
@@ -177,6 +205,8 @@ if __name__ == "__main__":
     fst_fw = build_frameworks_fst()
     fst_db = build_databases_fst()
     fst_ai = build_aiml_fst()
+    fst_do = build_devops_fst()
+
 
     print("\n--- Programming Languages ---")
     for token in ["JS", "py", "TS"]:
@@ -193,3 +223,7 @@ if __name__ == "__main__":
     print("\n--- AI / ML / Data Tools ---")
     for token in ["Pandas", "sklearn", "Scikit-learn", "tf", "PyTorch", "spaCy", "HuggingFace"]:
         print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_ai)}'")
+
+    print("\n--- DevOps / Cloud Tools ---")
+    for token in ["Git", "git", "Docker", "k8s", "Kubernetes", "AWS", "Jenkins", "Linux", "Terraform"]:
+        print(f"Input: '{token}' \t-> Canonical: '{normalize_token(token, fst_do)}'")
