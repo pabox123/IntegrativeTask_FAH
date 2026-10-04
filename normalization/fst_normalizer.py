@@ -193,8 +193,8 @@ def normalize_token(token: str, fst: FST) -> str:
     If no match is found, returns the upper-case version of the original token.
     """
     translations = list(fst.translate([token]))
-    if translations:
-        first_path = translations
+    if translations and len(translations) > 0:
+        first_path = translations[0]
         return "".join(str(symbol) for symbol in first_path)
     return token.upper()
 
