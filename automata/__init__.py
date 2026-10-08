@@ -13,6 +13,11 @@ from .devops_dfa import (
     validate_devops_profile,
     get_devops_profile_info,
 )
+from .nlp_engineer_dfa import (
+    create_nlp_engineer_dfa,
+    validate_nlp_engineer_profile,
+    get_nlp_engineer_profile_info,
+)
 
 __all__ = [
     "create_full_stack_dfa",
@@ -24,4 +29,7 @@ __all__ = [
     "create_devops_dfa",
     "validate_devops_profile",
     "get_devops_profile_info",
+    "create_nlp_engineer_dfa",
+    "validate_nlp_engineer_profile",
+    "get_nlp_engineer_profile_info",
 ]
