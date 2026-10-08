@@ -1,0 +1,26 @@
+CandidateProfile {
+    name: "Wednesday Addams"
+    email: "wednesday.addams@example.com"
+    location: "Nevermore Academy, Jericho"
+    current_role: "Student and independent investigator"
+
+    summary: "Detail-oriented developer with three years of experience developing web applications. Experienced in building applications that organize information, investigate unusual events, and manage structured records."
+
+    Experience {
+        company: "Nevermore Academy Projects"
+        duration: "3 years"
+        description: "Developed web applications for organizing investigation notes and structured information."
+    }
+
+    Skill: JAVASCRIPT
+    Skill: REACT
+    Skill: NODE_JS
+    Skill: POSTGRESQL
+    Skill: GIT
+
+    Evaluation {
+        profile: "Full Stack Developer"
+        result: ACCEPTED
+        description: "The normalized qualifications satisfy an accepted Full Stack Developer pattern."
+    }
+}

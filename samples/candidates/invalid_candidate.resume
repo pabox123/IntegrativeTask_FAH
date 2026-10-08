@@ -1,0 +1,10 @@
+CandidateProfile {
+    email: "missing_name@example.com"
+
+    Skill: PYTHON
+
+    Evaluation {
+        profile: "Machine Learning Engineer"
+        result: INVALID_RESULT
+    }
+}
