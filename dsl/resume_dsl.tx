@@ -1,0 +1,53 @@
+// grammar for candidate profile specification
+
+Resume:
+    'Resume' '{'
+        personal=PersonalInfo
+        summary=ProfileSummary
+        experiences+=Experience*
+        skills=Skills
+        evaluations+=Evaluation*
+    '}'
+;
+
+PersonalInfo:
+    'personal' '{'
+        'name' '=' name=STRING ','
+        'email' '=' email=STRING ','
+        'location' '=' location=STRING ','
+        'role' '=' role=STRING
+    '}'
+;
+
+ProfileSummary:
+    'summary' '=' text=STRING
+;
+
+Experience:
+    'experience' '{'
+        'title' '=' title=STRING ','
+        'company' '=' company=STRING ','
+        'duration' '=' duration=STRING ','
+        'bullets' '=' '[' bullets+=STRING (',' bullets+=STRING)* ']'
+    '}'
+;
+
+Skills:
+    'skills' '=' '[' items+=ID (',' items+=ID)* ']'
+;
+
+Evaluation:
+    'evaluation' '{'
+        'profile' '=' profile=ProfileName ','
+        'result' '=' result=ResultStatus ','
+        'message' '=' message=STRING
+    '}'
+;
+
+ProfileName:
+    'FULL_STACK' | 'MACHINE_LEARNING' | 'DEVOPS' | 'NLP_ENGINEER'
+;
+
+ResultStatus:
+    'ACCEPTED' | 'REJECTED'
+;
