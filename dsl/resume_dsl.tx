@@ -1,53 +1,38 @@
-// grammar for candidate profile specification
+// ResumeLens candidate profile DSL (textX grammar)
 
-Resume:
-    'Resume' '{'
-        personal=PersonalInfo
-        summary=ProfileSummary
-        experiences+=Experience*
-        skills=Skills
-        evaluations+=Evaluation*
+CandidateProfile:
+    'CandidateProfile' '{'
+        ('name' ':' name=STRING)?
+        ('email' ':' email=STRING)?
+        ('location' ':' location=STRING)?
+        ('current_role' ':' current_role=STRING)?
+        ('summary' ':' summary=STRING)?
+        experiences*=Experience
+        skills*=SkillEntry
+        evaluation=Evaluation?
     '}'
-;
-
-PersonalInfo:
-    'personal' '{'
-        'name' '=' name=STRING ','
-        'email' '=' email=STRING ','
-        'location' '=' location=STRING ','
-        'role' '=' role=STRING
-    '}'
-;
-
-ProfileSummary:
-    'summary' '=' text=STRING
 ;
 
 Experience:
-    'experience' '{'
-        'title' '=' title=STRING ','
-        'company' '=' company=STRING ','
-        'duration' '=' duration=STRING ','
-        'bullets' '=' '[' bullets+=STRING (',' bullets+=STRING)* ']'
+    'Experience' '{'
+        'company' ':' company=STRING
+        'duration' ':' duration=STRING
+        'description' ':' description=STRING
     '}'
 ;
 
-Skills:
-    'skills' '=' '[' items+=ID (',' items+=ID)* ']'
+SkillEntry:
+    'Skill' ':' value=SkillToken
+;
+
+SkillToken:
+    /[^\n]+/
 ;
 
 Evaluation:
-    'evaluation' '{'
-        'profile' '=' profile=ProfileName ','
-        'result' '=' result=ResultStatus ','
-        'message' '=' message=STRING
+    'Evaluation' '{'
+        'profile' ':' profile=STRING
+        'result' ':' result=ID
+        ('description' ':' description=STRING)?
     '}'
-;
-
-ProfileName:
-    'FULL_STACK' | 'MACHINE_LEARNING' | 'DEVOPS' | 'NLP_ENGINEER'
-;
-
-ResultStatus:
-    'ACCEPTED' | 'REJECTED'
 ;

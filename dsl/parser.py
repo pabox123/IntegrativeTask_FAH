@@ -87,6 +87,18 @@ class ResumeParser:
 
         return summary
 
+    def validate_and_report(self, candidate):
+        try:
+            from dsl.validator import ProfileValidator
+        except ModuleNotFoundError:
+            # Allow running this file directly (python dsl/parser.py)
+            from validator import ProfileValidator
+
+        validator = ProfileValidator()
+        result = validator.validate(candidate)
+
+        print("\n" + result.summary())
+        return result
 
 def main():
     parser = ResumeParser()
@@ -149,22 +161,37 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
 
+    # example 3
     print("\n" + "="*60)
-    print("Example 3: Parsing invalid candidate (should fail)")
+    print("Example 3: Parsing and rejecting invalid candidate")
     print("="*60)
 
     invalid_text = """
     CandidateProfile {
-        email: "missing_name@example.com"
-        
-        Skill: PYTHON
-        
+        name: ""
+        email: "not-an-email"
+        location: "Unknown"
+
+        Skill: python
+        Skill: JAVASCRIPT
+        Skill: JAVASCRIPT
+
         Evaluation {
-            profile: "Full Stack Developer"
-            result: REJECTED
+            profile: "Blockchain Developer"
+            result: ACCEPTED
+            description: "This should be rejected"
         }
     }
     """
+
+    try:
+        candidate = parser.parse_string(invalid_text)
+        result = parser.validate_and_report(candidate)
+
+        if not result.is_valid:
+            print("\n⚠ Candidate REJECTED — see violations above.")
+    except Exception as e:
+        print(f"\nParsing error: {type(e).__name__}: {e}")
 
     try:
         candidate = parser.parse_string(invalid_text)
