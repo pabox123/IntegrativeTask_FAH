@@ -10,6 +10,7 @@ class FrameworkExtractor:
             Vue(?:\.js)? |
             Angular |
             Node(?:\.js)? |
+            NodeJS |
             Express(?:\.js)? |
             Spring(?:\s+Boot)? |
             Django |

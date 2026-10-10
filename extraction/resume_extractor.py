@@ -14,7 +14,7 @@ class ResumeExtractor:
         #runs all extractors on the provided resume
         if not text:
             return {
-                "contacts": [],
+                "contacts": {},
                 "languages": [],
                 "frameworks": [],
                 "databases_and_tools": [],

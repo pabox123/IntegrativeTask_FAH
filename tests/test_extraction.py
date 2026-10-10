@@ -73,3 +73,60 @@ def test_resume_extractor_empty():
     assert data["databases_and_tools"] == []
     assert data["education"] == []
     assert data["experience"] == []
+
+def test_edge_case_casing_extremes():
+       #Test resilience against all-lowercase and all-uppercase resume formatting.
+    lowercase_text = "python, react, postgresql, bachelor degree, 3 years of experience."
+    data_lower = ResumeExtractor.extract_resume_data(lowercase_text)
+
+    assert "python" in [l.lower() for l in data_lower["languages"]]
+    assert "react" in [f.lower() for f in data_lower["frameworks"]]
+    assert "postgresql" in [d.lower() for d in data_lower["databases_and_tools"]]
+
+    uppercase_text = "PYTHON, REACT, POSTGRESQL, BACHELOR"
+    data_upper = ResumeExtractor.extract_resume_data(uppercase_text)
+
+    assert len(data_upper["languages"]) > 0
+    assert len(data_upper["frameworks"]) > 0
+
+
+def test_edge_case_multiline_bullet_points():
+    """Test extraction from typical bulleted and multiline resume layouts."""
+    multiline_resume = """
+    Jane Developer
+    Email: jane.dev@company.org | Phone: 987-654-3210
+    
+    SKILLS & STACK:
+    * Languages: Python, Java
+    * Frameworks: Django, Spring Boot
+    * Databases: MySQL, Redis
+    
+    EDUCATION:
+    - Master of Science in Computer Science
+    
+    EXPERIENCE:
+    - Worked for 4+ years in software engineering.
+    """
+
+    data = ResumeExtractor.extract_resume_data(multiline_resume)
+
+    assert data["contacts"]["extracted_email"] == "jane.dev@company.org"
+    assert data["contacts"]["extracted_phone"] == "987-654-3210"
+    assert "Python" in data["languages"]
+    assert "Java" in data["languages"]
+    assert "Django" in data["frameworks"]
+    assert "Spring Boot" in data["frameworks"]
+    assert "MySQL" in data["databases_and_tools"]
+    assert "Redis" in data["databases_and_tools"]
+    assert len(data["education"]) > 0
+    assert len(data["experience"]) > 0
+
+
+def test_edge_case_partial_contacts():
+    """Test behavior when contact info is partially missing (e.g., only email present)."""
+    text = "Only my email is here: contact@domain.com. No phone or linkedin."
+    data = ResumeExtractor.extract_resume_data(text)
+
+    assert data["contacts"]["extracted_email"] == "contact@domain.com"
+    assert data["contacts"]["extracted_phone"] is None
+    assert data["contacts"]["extracted_linkedin"] is None
