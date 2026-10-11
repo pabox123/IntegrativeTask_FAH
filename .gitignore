@@ -23,9 +23,11 @@
 hs_err_pid*
 replay_pid*
 
-.idea/
-__pycache__/
-*.pyc
 .venv/
 venv/
-.pytest_cache/
+env/
+
+__pycache__/
+*.py[cod]
+
+.idea/
