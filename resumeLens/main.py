@@ -1,47 +1,123 @@
-"""
-ResumeLens main pipeline.
 
-Regex extraction -> FST normalization -> DFA classification -> textX spec -> HTML report.
-
-Usage:
-    python main.py samples/resumes/cv_fullstack.txt
-    python main.py --demo
-"""
-
+import html
 import json
 import os
+import re
 import sys
 
-from extraction.extractor import extract_resume_data
-from normalization.fst_normalizer import normalize_skills
-from automata.full_stack_dfa import FullStackDFA
-from automata.ml_engineer_dfa import MLEngineerDFA
-from automata.devops_dfa import DevOpsDFA
-from automata.nlp_engineer_dfa import NLPEngineerDFA
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+from automata.devops_dfa import validate_devops_profile
+from automata.full_stack_dfa import validate_full_stack_profile
+from automata.ml_engineer_dfa import validate_ml_engineer_profile
+from automata.nlp_engineer_dfa import validate_nlp_engineer_profile
 from dsl.parser import ResumeParser
 from dsl.validator import ProfileValidator
-from visualization.html_generator import generate_html_report
+from extraction.resume_extractor import ResumeExtractor
+from normalization.canonical import SkillNormalizerPipeline
 
-OUTPUT_DIR = "output"
 
+OUTPUT_DIR = os.path.join(ROOT_DIR, "output")
 SAMPLES = [
-    "samples/resumes/cv_fullstack.txt",
-    "samples/resumes/cv_ml.txt",
-    "samples/resumes/cv_devops.txt",
-    "samples/resumes/cv_nlp.txt",
+    os.path.join(ROOT_DIR, "samples", "resumes", "cv_fullstack.txt"),
+    os.path.join(ROOT_DIR, "samples", "resumes", "cv_ml.txt"),
+    os.path.join(ROOT_DIR, "samples", "resumes", "cv_devops.txt"),
+    os.path.join(ROOT_DIR, "samples", "resumes", "cv_nlp.txt"),
 ]
+
+PROFILE_VALIDATORS = {
+    "Full Stack Developer": validate_full_stack_profile,
+    "Machine Learning Engineer": validate_ml_engineer_profile,
+    "DevOps Engineer": validate_devops_profile,
+    "NLP Engineer": validate_nlp_engineer_profile,
+}
+
+PROFILE_REQUIREMENTS = {
+    "Full Stack Developer": (
+        "JAVASCRIPT TYPESCRIPT REACT ANGULAR VUE NODE_JS DJANGO "
+        "SPRING_BOOT EXPRESS POSTGRESQL MYSQL MONGODB SQL NOSQL GIT"
+    ).split(),
+    "Machine Learning Engineer": (
+        "PYTHON R PANDAS NUMPY SCIKIT_LEARN XGBOOST TENSORFLOW PYTORCH "
+        "SQL POSTGRESQL MYSQL BIGQUERY GIT"
+    ).split(),
+    "DevOps Engineer": (
+        "PYTHON BASH POWERSHELL DOCKER KUBERNETES HELM JENKINS GITLAB_CI "
+        "GITHUB_ACTIONS TERRAFORM ANSIBLE CLOUDFORMATION AWS AZURE GCP "
+        "PROMETHEUS GRAFANA ELK GIT"
+    ).split(),
+    "NLP Engineer": (
+        "PYTHON SQL BASH SPACY NLTK GENSIM PYTORCH TENSORFLOW TRANSFORMERS "
+        "BERT ROBERTA POSTGRESQL MYSQL ELASTICSEARCH DOCKER GIT JUPYTER FASTAPI"
+    ).split(),
+}
+
+# Terms which the repository's individual regex extractors do not currently
+# cover, but which are needed by the DFA profile vocabularies.
+EXTRA_SKILL_ALIASES = {
+    "nodejs": "NODE_JS",
+    "node.js": "NODE_JS",
+    "rest api": "REST_API",
+    "rest apis": "REST_API",
+    "scikit learn": "SCIKIT_LEARN",
+    "scikit-learn": "SCIKIT_LEARN",
+    "tensor flow": "TENSORFLOW",
+    "py torch": "PYTORCH",
+    "xgboost": "XGBOOST",
+    "github actions": "GITHUB_ACTIONS",
+    "gitlab ci": "GITLAB_CI",
+    "cloudformation": "CLOUDFORMATION",
+    "prometheus": "PROMETHEUS",
+    "grafana": "GRAFANA",
+    "elk stack": "ELK",
+    "helm": "HELM",
+    "ansible": "ANSIBLE",
+    "powershell": "POWERSHELL",
+    "jupyter": "JUPYTER",
+    "fastapi": "FASTAPI",
+    "bert": "BERT",
+    "roberta": "ROBERTA",
+    "gensim": "GENSIM",
+    "elasticsearch": "ELASTICSEARCH",
+}
 
 
 def banner(title):
     print(f"\n=== {title} ===")
 
 
+def _candidate_name(text):
+    first_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
+    return first_line if first_line and "@" not in first_line else "Unknown"
+
+
+def _candidate_location(text):
+    match = re.search(r"(?im)^Location:\s*(.+)$", text)
+    return match.group(1).strip() if match else "Unknown"
+
+
 def extract(text):
     banner("1. Extraction (regex)")
-    data = extract_resume_data(text)
-    print(f"name: {data.get('name')}")
-    print(f"email: {data.get('email')}")
-    print(f"skills: {len(data.get('skills', []))}")
+    data = ResumeExtractor.extract_resume_data(text)
+    data["name"] = _candidate_name(text)
+    data["email"] = data.get("contacts", {}).get("extracted_email")
+    data["location"] = _candidate_location(text)
+
+    raw_skills = []
+    for key in ("languages", "frameworks", "databases_and_tools"):
+        raw_skills.extend(data.get(key, []))
+
+    lowered_text = text.lower()
+    for term, canonical in EXTRA_SKILL_ALIASES.items():
+        if term in lowered_text:
+            raw_skills.append(canonical)
+    data["skills"] = raw_skills
+
+    print(f"name: {data['name']}")
+    print(f"email: {data['email']}")
+    print(f"skills: {len(data['skills'])}")
     print(f"experience entries: {len(data.get('experience', []))}")
     print(f"education entries: {len(data.get('education', []))}")
     return data
@@ -50,27 +126,26 @@ def extract(text):
 def normalize(extracted):
     banner("2. Normalization (FST)")
     raw = extracted.get("skills", [])
-    skills = normalize_skills(raw)
+    skills = SkillNormalizerPipeline().normalize_and_sort_skills(raw)
     print(f"raw: {raw}")
     print(f"normalized: {skills}")
     return skills
 
 
+def _ordered_profile_skills(skills, profile):
+    available = set(skills)
+    return [skill for skill in PROFILE_REQUIREMENTS[profile] if skill in available]
+
+
 def classify(skills):
     banner("3. Classification (automata)")
-    automata = {
-        "Full Stack Developer": FullStackDFA(),
-        "Machine Learning Engineer": MLEngineerDFA(),
-        "DevOps Engineer": DevOpsDFA(),
-        "NLP Engineer": NLPEngineerDFA(),
-    }
-
     accepted = None
-    for profile, dfa in automata.items():
-        result = dfa.validate(skills)["result"]
-        print(f"{profile}: {result}")
-        # keep the first profile that accepts
-        if result == "ACCEPTED" and accepted is None:
+    for profile, validator in PROFILE_VALIDATORS.items():
+        sequence = _ordered_profile_skills(skills, profile)
+        result = bool(sequence) and validator(sequence)
+        status = "ACCEPTED" if result else "REJECTED"
+        print(f"{profile}: {status}")
+        if result and accepted is None:
             accepted = profile
 
     if accepted:
@@ -78,64 +153,84 @@ def classify(skills):
     return {"profile": "Unknown", "result": "REJECTED"}
 
 
+def _quote(value):
+    return json.dumps(str(value), ensure_ascii=False)
+
+
+def _duration(value):
+    match = re.search(r"\d+(?:\.\d+)?\s+(?:years?|months?)", str(value), re.IGNORECASE)
+    return match.group(0) if match else "1 year"
+
+
 def build_spec(extracted, skills, classification):
     banner("4. Specification (textX)")
+    lines = [
+        "CandidateProfile {",
+        f"    name: {_quote(extracted.get('name', 'Unknown'))}",
+        f"    email: {_quote(extracted.get('email') or 'unknown@example.com')}",
+        f"    location: {_quote(extracted.get('location', 'Unknown'))}",
+        f"    current_role: {_quote(classification['profile'])}",
+        '    summary: "Candidate profile generated by ResumeLens"',
+    ]
 
-    skills_block = "\n".join(f"    Skill: {s}" for s in skills)
+    for experience in extracted.get("experience", [])[:3]:
+        lines.extend([
+            "    Experience {",
+            '        company: "Extracted resume experience"',
+            f"        duration: {_quote(_duration(experience))}",
+            '        description: "Professional experience"',
+            "    }",
+        ])
+    for skill in skills:
+        lines.append(f"    Skill: {skill}")
 
-    experience_block = ""
-    for exp in extracted.get("experience", [])[:3]:
-        # company and duration come in one string separated by "·"
-        parts = exp.get("company_duration", "Unknown").split("·")
-        company = parts[0].strip()
-        duration = parts[1].strip() if len(parts) > 1 else "1 year"
-        experience_block += f"""
-    Experience {{
-        company: "{company}"
-        duration: "{duration}"
-        description: "Professional experience"
-    }}
-"""
-
-    if classification["result"] == "ACCEPTED":
-        description = f"The normalized qualifications satisfy an accepted {classification['profile']} pattern."
-    else:
-        description = f"The normalized qualifications do not satisfy any accepted pattern for {classification['profile']}."
-
-    spec = f"""
-CandidateProfile {{
-    name: "{extracted.get('name', 'Unknown')}"
-    email: "{extracted.get('email', 'unknown@example.com')}"
-    location: "{extracted.get('location', 'Unknown')}"
-    current_role: "{extracted.get('name', 'Candidate')}"
-
-    summary: "Candidate profile generated by ResumeLens"
-{experience_block}
-{skills_block}
-
-    Evaluation {{
-        profile: "{classification['profile']}"
-        result: {classification['result']}
-        description: "{description}"
-    }}
-}}
-"""
+    description = (
+        f"The normalized qualifications satisfy an accepted "
+        f"{classification['profile']} pattern."
+        if classification["result"] == "ACCEPTED"
+        else "The normalized qualifications do not satisfy any accepted profile pattern."
+    )
+    lines.extend([
+        "    Evaluation {",
+        f"        profile: {_quote(classification['profile'])}",
+        f"        result: {classification['result']}",
+        f"        description: {_quote(description)}",
+        "    }",
+        "}",
+    ])
+    spec = "\n".join(lines)
 
     candidate = ResumeParser().parse_string(spec)
     validation = ProfileValidator().validate(candidate)
-    if validation.is_valid:
-        print("validation passed")
-    else:
-        print(f"validation failed:\n{validation.summary()}")
-
+    print("validation passed" if validation.is_valid else
+          f"validation failed:\n{validation.summary()}")
     return spec
+
+
+def generate_html_report(extracted, skills, classification):
+    rows = "".join(
+        f"<li>{html.escape(skill)}</li>" for skill in skills
+    )
+    return f"""<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ResumeLens report</title></head>
+<body>
+<h1>ResumeLens report</h1>
+<p><strong>Name:</strong> {html.escape(str(extracted.get('name', 'Unknown')))}</p>
+<p><strong>Email:</strong> {html.escape(str(extracted.get('email') or 'Unknown'))}</p>
+<p><strong>Profile:</strong> {html.escape(classification['profile'])}</p>
+<p><strong>Result:</strong> {html.escape(classification['result'])}</p>
+<h2>Normalized skills</h2><ul>{rows}</ul>
+</body>
+</html>
+"""
 
 
 def visualize(extracted, skills, classification):
     banner("5. Visualization (HTML)")
-    html = generate_html_report(extracted, skills, classification)
-    print(f"report size: {len(html)} bytes")
-    return html
+    report = generate_html_report(extracted, skills, classification)
+    print(f"report size: {len(report)} bytes")
+    return report
 
 
 def process_resume_text(text):
@@ -143,13 +238,14 @@ def process_resume_text(text):
     skills = normalize(extracted)
     classification = classify(skills)
     spec = build_spec(extracted, skills, classification)
-    html = visualize(extracted, skills, classification)
+    report = visualize(extracted, skills, classification)
     return {
         "extracted": extracted,
         "skills": skills,
         "classification": classification,
+        "evaluation": classification,
         "dsl": spec,
-        "html": html,
+        "html": report,
     }
 
 
@@ -158,60 +254,52 @@ def process_resume(file_path):
         raise FileNotFoundError(f"Resume file not found: {file_path}")
 
     print(f"\nProcessing {file_path}")
-    with open(file_path, "r", encoding="utf-8") as f:
-        text = f.read()
-
-    result = process_resume_text(text)
+    with open(file_path, "r", encoding="utf-8") as file:
+        result = process_resume_text(file.read())
 
     name = os.path.splitext(os.path.basename(file_path))[0]
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
     paths = {
         "html": os.path.join(OUTPUT_DIR, f"{name}_profile.html"),
         "dsl": os.path.join(OUTPUT_DIR, f"{name}_profile.resume"),
         "json": os.path.join(OUTPUT_DIR, f"{name}_result.json"),
     }
-
-    with open(paths["html"], "w", encoding="utf-8") as f:
-        f.write(result["html"])
-    with open(paths["dsl"], "w", encoding="utf-8") as f:
-        f.write(result["dsl"])
-    with open(paths["json"], "w", encoding="utf-8") as f:
+    with open(paths["html"], "w", encoding="utf-8") as file:
+        file.write(result["html"])
+    with open(paths["dsl"], "w", encoding="utf-8") as file:
+        file.write(result["dsl"])
+    with open(paths["json"], "w", encoding="utf-8") as file:
         json.dump({
             "name": result["extracted"].get("name"),
             "email": result["extracted"].get("email"),
             "skills": result["skills"],
             "classification": result["classification"],
-        }, f, indent=2)
+        }, file, indent=2)
 
     print("\nSaved:")
     for path in paths.values():
         print(f"  {path}")
-
     result["paths"] = paths
     return result
 
 
 def run_demo():
-    results = []
-    for sample in SAMPLES:
-        if os.path.exists(sample):
-            results.append(process_resume(sample))
-        else:
-            print(f"Skipping {sample} (not found)")
-
+    results = [
+        process_resume(sample) for sample in SAMPLES if os.path.exists(sample)
+    ]
     banner("Summary")
-    for r in results:
-        name = r["extracted"].get("name", "Unknown")
-        c = r["classification"]
-        print(f"{name:25s} {c['profile']:30s} {c['result']}")
+    for result in results:
+        classification = result["classification"]
+        print(
+            f"{result['extracted'].get('name', 'Unknown'):25s} "
+            f"{classification['profile']:30s} {classification['result']}"
+        )
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python main.py <resume.txt> | --demo")
+        print("Usage: python resumeLens/main.py <resume.txt> | --demo")
         return
-
     if sys.argv[1] == "--demo":
         run_demo()
     else:

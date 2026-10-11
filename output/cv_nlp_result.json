@@ -1,0 +1,29 @@
+{
+  "name": "Laura Daniela Mej\u00eda",
+  "email": "laura.mejia@correo.com",
+  "skills": [
+    "PYTHON",
+    "REST_API",
+    "POSTGRESQL",
+    "MONGODB",
+    "SQL",
+    "LINUX",
+    "BASH",
+    "GIT",
+    "DOCKER",
+    "PANDAS",
+    "TENSORFLOW",
+    "PYTORCH",
+    "BERT",
+    "JUPYTER",
+    "GITHUB",
+    "FASTAPI",
+    "ROBERTA",
+    "ELASTICSEARCH",
+    "GENSIM"
+  ],
+  "classification": {
+    "profile": "NLP Engineer",
+    "result": "ACCEPTED"
+  }
+}

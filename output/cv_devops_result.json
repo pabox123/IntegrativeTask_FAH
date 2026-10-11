@@ -1,0 +1,32 @@
+{
+  "name": "Andr\u00e9s Felipe Casta\u00f1o",
+  "email": "andres.castano@correo.com",
+  "skills": [
+    "LINUX",
+    "BASH",
+    "GIT",
+    "DOCKER",
+    "KUBERNETES",
+    "JENKINS",
+    "TERRAFORM",
+    "AWS",
+    "GCP",
+    "AZURE",
+    "ANSIBLE",
+    "JIRA",
+    "POWERSHELL",
+    "PROMETHEUS",
+    "GRAFANA",
+    "HELM",
+    "GITLAB",
+    "GITHUB",
+    "ELK",
+    "GITHUB_ACTIONS",
+    "GITLAB_CI",
+    "CLOUDFORMATION"
+  ],
+  "classification": {
+    "profile": "DevOps Engineer",
+    "result": "ACCEPTED"
+  }
+}

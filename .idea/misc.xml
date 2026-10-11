@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="sdkName" value="Python 3.14 (untitled)" />
+  </component>
   <component name="KubernetesApiProvider">{}</component>
-  <component name="ProjectRootManager" version="2" default="true" project-jdk-name="~\Documents\SEM-6\discre 3\IntegrativeTask_FAH\.venv" project-jdk-type="Python SDK">
+  <component name="ProjectRootManager" version="2" default="true" project-jdk-name="Python 3.14" project-jdk-type="Python SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

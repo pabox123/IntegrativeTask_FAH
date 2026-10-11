@@ -1,0 +1,26 @@
+{
+  "name": "Valentina Ospina",
+  "email": "valentina.ospina@correo.com",
+  "skills": [
+    "PYTHON",
+    "POSTGRESQL",
+    "MYSQL",
+    "SQL",
+    "LINUX",
+    "GIT",
+    "DOCKER",
+    "PANDAS",
+    "NUMPY",
+    "SCIKIT_LEARN",
+    "TENSORFLOW",
+    "PYTORCH",
+    "XGBOOST",
+    "R",
+    "JUPYTER",
+    "GITHUB"
+  ],
+  "classification": {
+    "profile": "Machine Learning Engineer",
+    "result": "ACCEPTED"
+  }
+}
