@@ -14,16 +14,16 @@
     "AZURE",
     "CLOUDFORMATION",
     "GITLAB",
-    "GITLAB_CI",
+    "POWERSHELL",
     "GRAFANA",
-    "ANSIBLE",
     "PROMETHEUS",
+    "ELK",
+    "GITLAB_CI",
     "HELM",
     "GITHUB_ACTIONS",
-    "ELK",
-    "POWERSHELL",
     "JIRA",
-    "GITHUB"
+    "GITHUB",
+    "ANSIBLE"
   ],
   "classification": {
     "profile": "DevOps Engineer",

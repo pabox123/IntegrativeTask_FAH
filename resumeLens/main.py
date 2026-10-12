@@ -17,7 +17,7 @@ from dsl.parser import ResumeParser
 from dsl.validator import ProfileValidator
 from extraction.resume_extractor import ResumeExtractor
 from normalization.canonical import SkillNormalizerPipeline
-
+from visualization.html_generator import generate_html_report as generate_html_visualization
 
 OUTPUT_DIR = os.path.join(ROOT_DIR, "output")
 SAMPLES = [
@@ -54,8 +54,6 @@ PROFILE_REQUIREMENTS = {
     ).split(),
 }
 
-# Terms which the repository's individual regex extractors do not currently
-# cover, but which are needed by the DFA profile vocabularies.
 EXTRA_SKILL_ALIASES = {
     "nodejs": "NODE_JS",
     "node.js": "NODE_JS",
@@ -208,22 +206,7 @@ def build_spec(extracted, skills, classification):
 
 
 def generate_html_report(extracted, skills, classification):
-    rows = "".join(
-        f"<li>{html.escape(skill)}</li>" for skill in skills
-    )
-    return f"""<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>ResumeLens report</title></head>
-<body>
-<h1>ResumeLens report</h1>
-<p><strong>Name:</strong> {html.escape(str(extracted.get('name', 'Unknown')))}</p>
-<p><strong>Email:</strong> {html.escape(str(extracted.get('email') or 'Unknown'))}</p>
-<p><strong>Profile:</strong> {html.escape(classification['profile'])}</p>
-<p><strong>Result:</strong> {html.escape(classification['result'])}</p>
-<h2>Normalized skills</h2><ul>{rows}</ul>
-</body>
-</html>
-"""
+    return generate_html_visualization(extracted, skills, classification)
 
 
 def visualize(extracted, skills, classification):
