@@ -15,11 +15,11 @@
     "TENSORFLOW",
     "PYTORCH",
     "BERT",
+    "ROBERTA",
+    "FASTAPI",
     "GENSIM",
     "ELASTICSEARCH",
     "JUPYTER",
-    "FASTAPI",
-    "ROBERTA",
     "GITHUB"
   ],
   "classification": {

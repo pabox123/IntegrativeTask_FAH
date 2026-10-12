@@ -32,11 +32,11 @@ CandidateProfile {
     Skill: TENSORFLOW
     Skill: PYTORCH
     Skill: BERT
+    Skill: ROBERTA
+    Skill: FASTAPI
     Skill: GENSIM
     Skill: ELASTICSEARCH
     Skill: JUPYTER
-    Skill: FASTAPI
-    Skill: ROBERTA
     Skill: GITHUB
     Evaluation {
         profile: "NLP Engineer"

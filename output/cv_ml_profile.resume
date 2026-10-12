@@ -26,10 +26,10 @@ CandidateProfile {
     Skill: SCIKIT_LEARN
     Skill: TENSORFLOW
     Skill: PYTORCH
+    Skill: XGBOOST
+    Skill: JUPYTER
     Skill: GITHUB
     Skill: R
-    Skill: JUPYTER
-    Skill: XGBOOST
     Evaluation {
         profile: "Machine Learning Engineer"
         result: ACCEPTED
