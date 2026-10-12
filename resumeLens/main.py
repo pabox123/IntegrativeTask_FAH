@@ -1,9 +1,9 @@
-
 import html
 import json
 import os
 import re
 import sys
+from typing import Any, Dict, List
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
@@ -19,22 +19,22 @@ from extraction.resume_extractor import ResumeExtractor
 from normalization.canonical import SkillNormalizerPipeline
 from visualization.html_generator import generate_html_report as generate_html_visualization
 
-OUTPUT_DIR = os.path.join(ROOT_DIR, "output")
-SAMPLES = [
+OUTPUT_DIR: str = os.path.join(ROOT_DIR, "output")
+SAMPLES: List[str] = [
     os.path.join(ROOT_DIR, "samples", "resumes", "cv_fullstack.txt"),
     os.path.join(ROOT_DIR, "samples", "resumes", "cv_ml.txt"),
     os.path.join(ROOT_DIR, "samples", "resumes", "cv_devops.txt"),
     os.path.join(ROOT_DIR, "samples", "resumes", "cv_nlp.txt"),
 ]
 
-PROFILE_VALIDATORS = {
+PROFILE_VALIDATORS: Dict[str, Any] = {
     "Full Stack Developer": validate_full_stack_profile,
     "Machine Learning Engineer": validate_ml_engineer_profile,
     "DevOps Engineer": validate_devops_profile,
     "NLP Engineer": validate_nlp_engineer_profile,
 }
 
-PROFILE_REQUIREMENTS = {
+PROFILE_REQUIREMENTS: Dict[str, List[str]] = {
     "Full Stack Developer": (
         "JAVASCRIPT TYPESCRIPT REACT ANGULAR VUE NODE_JS DJANGO "
         "SPRING_BOOT EXPRESS POSTGRESQL MYSQL MONGODB SQL NOSQL GIT"
@@ -54,7 +54,7 @@ PROFILE_REQUIREMENTS = {
     ).split(),
 }
 
-EXTRA_SKILL_ALIASES = {
+EXTRA_SKILL_ALIASES: Dict[str, str] = {
     "nodejs": "NODE_JS",
     "node.js": "NODE_JS",
     "rest api": "REST_API",
@@ -82,32 +82,32 @@ EXTRA_SKILL_ALIASES = {
 }
 
 
-def banner(title):
+def banner(title: str) -> None:
     print(f"\n=== {title} ===")
 
 
-def _candidate_name(text):
-    first_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
+def _candidate_name(text: str) -> str:
+    first_line: str = next((line.strip() for line in text.splitlines() if line.strip()), "")
     return first_line if first_line and "@" not in first_line else "Unknown"
 
 
-def _candidate_location(text):
+def _candidate_location(text: str) -> str:
     match = re.search(r"(?im)^Location:\s*(.+)$", text)
     return match.group(1).strip() if match else "Unknown"
 
 
-def extract(text):
+def extract(text: str) -> Dict[str, Any]:
     banner("1. Extraction (regex)")
-    data = ResumeExtractor.extract_resume_data(text)
+    data: Dict[str, Any] = ResumeExtractor.extract_resume_data(text)
     data["name"] = _candidate_name(text)
     data["email"] = data.get("contacts", {}).get("extracted_email")
     data["location"] = _candidate_location(text)
 
-    raw_skills = []
+    raw_skills: List[str] = []
     for key in ("languages", "frameworks", "databases_and_tools"):
         raw_skills.extend(data.get(key, []))
 
-    lowered_text = text.lower()
+    lowered_text: str = text.lower()
     for term, canonical in EXTRA_SKILL_ALIASES.items():
         if term in lowered_text:
             raw_skills.append(canonical)
@@ -121,27 +121,27 @@ def extract(text):
     return data
 
 
-def normalize(extracted):
+def normalize(extracted: Dict[str, Any]) -> List[str]:
     banner("2. Normalization (FST)")
-    raw = extracted.get("skills", [])
-    skills = SkillNormalizerPipeline().normalize_and_sort_skills(raw)
+    raw: List[str] = extracted.get("skills", [])
+    skills: List[str] = SkillNormalizerPipeline().normalize_and_sort_skills(raw)
     print(f"raw: {raw}")
     print(f"normalized: {skills}")
     return skills
 
 
-def _ordered_profile_skills(skills, profile):
+def _ordered_profile_skills(skills: List[str], profile: str) -> List[str]:
     available = set(skills)
     return [skill for skill in PROFILE_REQUIREMENTS[profile] if skill in available]
 
 
-def classify(skills):
+def classify(skills: List[str]) -> Dict[str, str]:
     banner("3. Classification (automata)")
-    accepted = None
+    accepted: Any = None
     for profile, validator in PROFILE_VALIDATORS.items():
-        sequence = _ordered_profile_skills(skills, profile)
-        result = bool(sequence) and validator(sequence)
-        status = "ACCEPTED" if result else "REJECTED"
+        sequence: List[str] = _ordered_profile_skills(skills, profile)
+        result: bool = bool(sequence) and validator(sequence)
+        status: str = "ACCEPTED" if result else "REJECTED"
         print(f"{profile}: {status}")
         if result and accepted is None:
             accepted = profile
@@ -151,18 +151,18 @@ def classify(skills):
     return {"profile": "Unknown", "result": "REJECTED"}
 
 
-def _quote(value):
+def _quote(value: Any) -> str:
     return json.dumps(str(value), ensure_ascii=False)
 
 
-def _duration(value):
+def _duration(value: Any) -> str:
     match = re.search(r"\d+(?:\.\d+)?\s+(?:years?|months?)", str(value), re.IGNORECASE)
     return match.group(0) if match else "1 year"
 
 
-def build_spec(extracted, skills, classification):
+def build_spec(extracted: Dict[str, Any], skills: List[str], classification: Dict[str, str]) -> str:
     banner("4. Specification (textX)")
-    lines = [
+    lines: List[str] = [
         "CandidateProfile {",
         f"    name: {_quote(extracted.get('name', 'Unknown'))}",
         f"    email: {_quote(extracted.get('email') or 'unknown@example.com')}",
@@ -182,7 +182,7 @@ def build_spec(extracted, skills, classification):
     for skill in skills:
         lines.append(f"    Skill: {skill}")
 
-    description = (
+    description: str = (
         f"The normalized qualifications satisfy an accepted "
         f"{classification['profile']} pattern."
         if classification["result"] == "ACCEPTED"
@@ -196,7 +196,7 @@ def build_spec(extracted, skills, classification):
         "    }",
         "}",
     ])
-    spec = "\n".join(lines)
+    spec: str = "\n".join(lines)
 
     candidate = ResumeParser().parse_string(spec)
     validation = ProfileValidator().validate(candidate)
@@ -205,18 +205,18 @@ def build_spec(extracted, skills, classification):
     return spec
 
 
-def generate_html_report(extracted, skills, classification):
+def generate_html_report(extracted: Dict[str, Any], skills: List[str], classification: Dict[str, str]) -> str:
     return generate_html_visualization(extracted, skills, classification)
 
 
-def visualize(extracted, skills, classification):
+def visualize(extracted: Dict[str, Any], skills: List[str], classification: Dict[str, str]) -> str:
     banner("5. Visualization (HTML)")
-    report = generate_html_report(extracted, skills, classification)
+    report: str = generate_html_report(extracted, skills, classification)
     print(f"report size: {len(report)} bytes")
     return report
 
 
-def process_resume_text(text):
+def process_resume_text(text: str) -> Dict[str, Any]:
     extracted = extract(text)
     skills = normalize(extracted)
     classification = classify(skills)
@@ -232,7 +232,7 @@ def process_resume_text(text):
     }
 
 
-def process_resume(file_path):
+def process_resume(file_path: str) -> Dict[str, Any]:
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Resume file not found: {file_path}")
 
@@ -240,9 +240,9 @@ def process_resume(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         result = process_resume_text(file.read())
 
-    name = os.path.splitext(os.path.basename(file_path))[0]
+    name: str = os.path.splitext(os.path.basename(file_path))[0]
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    paths = {
+    paths: Dict[str, str] = {
         "html": os.path.join(OUTPUT_DIR, f"{name}_profile.html"),
         "dsl": os.path.join(OUTPUT_DIR, f"{name}_profile.resume"),
         "json": os.path.join(OUTPUT_DIR, f"{name}_result.json"),
@@ -266,7 +266,7 @@ def process_resume(file_path):
     return result
 
 
-def run_demo():
+def run_demo() -> None:
     results = [
         process_resume(sample) for sample in SAMPLES if os.path.exists(sample)
     ]
@@ -279,7 +279,7 @@ def run_demo():
         )
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print("Usage: python resumeLens/main.py <resume.txt> | --demo")
         return

@@ -24,18 +24,18 @@ CandidateProfile {
     Skill: AWS
     Skill: GCP
     Skill: AZURE
-    Skill: JIRA
+    Skill: GITLAB
+    Skill: ANSIBLE
+    Skill: ELK
+    Skill: HELM
+    Skill: GITHUB
+    Skill: POWERSHELL
+    Skill: GRAFANA
     Skill: CLOUDFORMATION
     Skill: GITLAB_CI
-    Skill: GITHUB_ACTIONS
-    Skill: HELM
-    Skill: ANSIBLE
-    Skill: POWERSHELL
+    Skill: JIRA
     Skill: PROMETHEUS
-    Skill: GRAFANA
-    Skill: ELK
-    Skill: GITLAB
-    Skill: GITHUB
+    Skill: GITHUB_ACTIONS
     Evaluation {
         profile: "DevOps Engineer"
         result: ACCEPTED

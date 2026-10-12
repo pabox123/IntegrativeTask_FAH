@@ -14,10 +14,10 @@
     "SCIKIT_LEARN",
     "TENSORFLOW",
     "PYTORCH",
-    "XGBOOST",
     "JUPYTER",
-    "GITHUB",
-    "R"
+    "XGBOOST",
+    "R",
+    "GITHUB"
   ],
   "classification": {
     "profile": "Machine Learning Engineer",

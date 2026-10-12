@@ -1,12 +1,15 @@
-import sys
+"""Interactive CLI for ResumeLens."""
+
 import os
+import sys
 import webbrowser
 from pathlib import Path
-
+from typing import Any, Dict, List, Optional
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+
 from resumeLens.main import SAMPLES, process_resume, run_demo
 
 MENU = """
@@ -19,19 +22,20 @@ ResumeLens
 """
 
 
-def clean_path(raw):
-    # dragging a file into the terminal on windows adds quotes
+def clean_path(raw: str) -> str:
+    """Clean surrounding whitespace and quotes from raw path input."""
     return raw.strip().strip('"').strip("'")
 
 
-def open_report(path):
+def open_report(path: str) -> None:
+    """Open the HTML report in the default system web browser."""
     webbrowser.open(Path(path).resolve().as_uri())
 
 
-def load_cv(path):
-    #run the pipeline on one file. returns the html path or none
+def load_cv(path: str) -> Optional[str]:
+    """Run the pipeline on one file. Returns the html path or None."""
     try:
-        result = process_resume(path)
+        result: Dict[str, Any] = process_resume(path)
     except FileNotFoundError as error:
         print(error)
         return None
@@ -39,25 +43,26 @@ def load_cv(path):
         print(f"Could not process the CV: {error}")
         return None
 
-    name = result["extracted"].get("name", "Unknown")
-    classification = result["classification"]
+    name: str = result["extracted"].get("name", "Unknown")
+    classification: Dict[str, Any] = result["classification"]
     print(f"\n{name}: {classification['profile']} -> {classification['result']}")
 
-    html_path = result["paths"]["html"]
+    html_path: str = result["paths"]["html"]
     if input("Open the report? [y/N] ").strip().lower() == "y":
         open_report(html_path)
     return html_path
 
 
-def choose_sample():
-    available = [s for s in SAMPLES if os.path.exists(s)]
+def choose_sample() -> Optional[str]:
+    """Display available sample resumes and run pipeline on selected sample."""
+    available: List[str] = [s for s in SAMPLES if os.path.exists(s)]
     if not available:
         print("No sample CVs found.")
         return None
 
     for i, sample in enumerate(available, 1):
         print(f"  {i}) {os.path.basename(sample)}")
-    choice = input("Sample number: ").strip()
+    choice: str = input("Sample number: ").strip()
 
     if not choice.isdigit() or not 1 <= int(choice) <= len(available):
         print("Invalid option.")
@@ -65,15 +70,16 @@ def choose_sample():
     return load_cv(available[int(choice) - 1])
 
 
-def run():
-    last_report = None
+def run() -> None:
+    """Run the interactive CLI loop."""
+    last_report: Optional[str] = None
     try:
         while True:
             print(MENU)
-            option = input("> ").strip()
+            option: str = input("> ").strip()
 
             if option == "1":
-                path = clean_path(input("CV path: "))
+                path: str = clean_path(input("CV path: "))
                 last_report = load_cv(path) or last_report
             elif option == "2":
                 last_report = choose_sample() or last_report
