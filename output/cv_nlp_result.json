@@ -15,12 +15,12 @@
     "TENSORFLOW",
     "PYTORCH",
     "BERT",
-    "JUPYTER",
-    "GITHUB",
-    "FASTAPI",
-    "ROBERTA",
     "ELASTICSEARCH",
-    "GENSIM"
+    "FASTAPI",
+    "GENSIM",
+    "ROBERTA",
+    "JUPYTER",
+    "GITHUB"
   ],
   "classification": {
     "profile": "NLP Engineer",

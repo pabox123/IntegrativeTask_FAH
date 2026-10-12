@@ -1,0 +1,14 @@
+{
+  "name": "CandidateProfile {",
+  "email": "wednesday.addams@example.com",
+  "skills": [
+    "JAVASCRIPT",
+    "REACT",
+    "POSTGRESQL",
+    "GIT"
+  ],
+  "classification": {
+    "profile": "Unknown",
+    "result": "REJECTED"
+  }
+}
