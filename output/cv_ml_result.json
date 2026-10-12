@@ -14,8 +14,8 @@
     "SCIKIT_LEARN",
     "TENSORFLOW",
     "PYTORCH",
-    "XGBOOST",
     "R",
+    "XGBOOST",
     "JUPYTER",
     "GITHUB"
   ],

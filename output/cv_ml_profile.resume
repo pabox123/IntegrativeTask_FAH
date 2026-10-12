@@ -26,8 +26,8 @@ CandidateProfile {
     Skill: SCIKIT_LEARN
     Skill: TENSORFLOW
     Skill: PYTORCH
-    Skill: XGBOOST
     Skill: R
+    Skill: XGBOOST
     Skill: JUPYTER
     Skill: GITHUB
     Evaluation {
