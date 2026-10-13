@@ -1,0 +1,38 @@
+// ResumeLens candidate profile DSL (textX grammar)
+
+CandidateProfile:
+    'CandidateProfile' '{'
+        ('name' ':' name=STRING)?
+        ('email' ':' email=STRING)?
+        ('location' ':' location=STRING)?
+        ('current_role' ':' current_role=STRING)?
+        ('summary' ':' summary=STRING)?
+        experiences*=Experience
+        skills*=SkillEntry
+        evaluation=Evaluation?
+    '}'
+;
+
+Experience:
+    'Experience' '{'
+        'company' ':' company=STRING
+        'duration' ':' duration=STRING
+        'description' ':' description=STRING
+    '}'
+;
+
+SkillEntry:
+    'Skill' ':' value=SkillToken
+;
+
+SkillToken:
+    /[^\n]+/
+;
+
+Evaluation:
+    'Evaluation' '{'
+        'profile' ':' profile=STRING
+        'result' ':' result=ID
+        ('description' ':' description=STRING)?
+    '}'
+;

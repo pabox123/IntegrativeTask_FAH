@@ -1,0 +1,25 @@
+CandidateProfile {
+    name: ""
+    email: "missing-at-sign.com"
+    location: "Unknown"
+    current_role: "Aspiring Developer"
+
+    summary: "I know some coding"
+
+    Experience {
+        company: "Freelance"
+        duration: "a while"
+        description: "Built some websites"
+    }
+
+    Skill: python
+    Skill: React.js
+    Skill: JAVASCRIPT
+    Skill: JAVASCRIPT
+
+    Evaluation {
+        profile: "Blockchain Developer"
+        result: ACCEPTED
+        description: "This candidate should be rejected for multiple reasons"
+    }
+}
